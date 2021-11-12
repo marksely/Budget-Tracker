@@ -49,3 +49,21 @@ function databaseCheck() {
         }
     }
 }
+
+request.onsuccess = function (event) {
+    db = event.target.result;
+
+    if(navigator.onLine) {
+        databaseCheck();
+    }
+};
+
+const saveRecord = (record) => {
+    const transaction = db.transaction(['BudgetStore'], 'readwrite');
+
+    const store = transaction.objectStore('BudgetStore');
+
+    store.add(record);
+};
+
+window.addEventListener('online', databaseCheck);
