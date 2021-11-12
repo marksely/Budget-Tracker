@@ -1,11 +1,13 @@
 let db;
-let budgetTracker;
+let budgetVersion;
 
-const request = indexedDB.open('BudgetDB', budgetTracker || 21);
+const request = indexedDB.open('BudgetDB', budgetVersion || 21);
 
 request.onupgradeneeded = function (event) {
     const { oldVersion } = event;
-    const newVersion = e.newVersion || db.version;
+    const newVersion = event.newVersion || db.version;
+
+    console.log(`${oldVersion} updated to ${newVersion}`);
 
     db = event.target.result;
 
@@ -35,17 +37,15 @@ function databaseCheck() {
                     'Content-Type': 'application/json',
                 },
             })
-            .then((response) => {
-                response.json()
-            })
-            .then((res) => {
-                if(res.length !== 0) {
-                    transaction = db.transaction(['BudgetStore'], 'readwrite');
-                    const currentStore = transaction.objectStore('BudgetStore');
+                .then((response) => response.json())
+                .then((res) => {
+                    if(res.length !== 0) {
+                        transaction = db.transaction(['BudgetStore'], 'readwrite');
+                        const currentStore = transaction.objectStore('BudgetStore');
 
-                    currentStore.clear();
-                }
-            })
+                        currentStore.clear();
+                    }
+                });
         }
     }
 }
